@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CategoryKind {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+enum AccountType {
+  BANK
+  CASH
+  CREDIT
+  DIGITAL
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  transactions Transaction[]
+  recurrences  Recurrence[] @relation("RecurrenceCreatedBy")
+
+  @@map("users")
+}
+
+model Account {
+  id             Int       @id @default(autoincrement())
+  name           String
+  type           AccountType
+  initialBalance Decimal   @default(0) @map("initial_balance") @db.Decimal(14, 2)
+  balance        Decimal   @default(0) @db.Decimal(14, 2)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  originTransactions  Transaction[] @relation("OriginAccount")
+  destinyTransactions Transaction[] @relation("DestinyAccount")
+  recurrences         Recurrence[]
+
+  @@map("accounts")
+}
+
+model Category {
+  id        Int          @id @default(autoincrement())
+  name      String
+  kind      CategoryKind
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  transactions Transaction[]
+  recurrences  Recurrence[]
+
+  @@map("categories")
+}
+
+model Transaction {
+  id        Int             @id @default(autoincrement())
+  type      TransactionType
+  amount    Decimal         @db.Decimal(14, 2)
+  date      DateTime        @db.Date
+  note      String?
+
+  categoryId Int?           @map("category_id")
+  category   Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  accountOriginId Int?      @map("account_origin_id")
+  accountOrigin   Account?  @relation("OriginAccount", fields: [accountOriginId], references: [id], onDelete: SetNull)
+
+  accountDestinyId Int?     @map("account_destiny_id")
+  accountDestiny   Account? @relation("DestinyAccount", fields: [accountDestinyId], references: [id], onDelete: SetNull)
+
+  userId   Int              @map("user_id")
+  user     User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  @@index([date])
+  @@index([type])
+  @@map("transactions")
+}
+
+model Recurrence {
+  id          Int       @id @default(autoincrement())
+  type        TransactionType
+  amount      Decimal   @db.Decimal(14, 2)
+  dayOfMonth  Int       @map("day_of_month")
+  startDate   DateTime  @map("start_date") @db.Date
+  endDate     DateTime? @map("end_date") @db.Date
+  active      Boolean   @default(true)
+  note        String?
+
+  categoryId  Int       @map("category_id")
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  accountId   Int       @map("account_id")
+  account     Account   @relation(fields: [accountId], references: [id], onDelete: Restrict)
+
+  createdByUserId Int   @map("created_by_user_id")
+  createdBy       User  @relation("RecurrenceCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@map("recurrences")
+}
