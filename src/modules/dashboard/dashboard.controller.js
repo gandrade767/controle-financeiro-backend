@@ -6,7 +6,6 @@ async function summary(req, res, next) {
       return res.status(401).json({ message: "Usuário não autenticado" });
     }
 
-    // ✅ Agora sim pode usar com segurança
     const result = await dashboardService.summary(req.user.id);
 
     return res.json(result);
@@ -15,4 +14,28 @@ async function summary(req, res, next) {
   }
 }
 
-module.exports = { summary };
+async function byCategory(req, res, next) {
+  try {
+    console.log('BY-CATEGORY START', req.query, 'user=', req.user?.id);
+    const result = await dashboardService.getByCategory(req.user.id, req.query.type, req.query.month);
+    console.log('BY-CATEGORY END', result?.length);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function monthly(req, res, next) {
+  try {
+    const { year } = req.query;
+    const result = await dashboardService.getMonthly(
+      req.user.id,
+      year
+    );
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { summary, byCategory, monthly };
