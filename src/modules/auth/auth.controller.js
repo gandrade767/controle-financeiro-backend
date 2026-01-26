@@ -10,13 +10,13 @@ async function login(req, res, next) {
 
         const data = await authService.login(email, password);
 
-        res.json({
+        return res.json({
             user: {
                 id: data.user.id,
                 name: data.user.name,
                 email: data.user.email,
             },
-            acessToken: data.accessToken,
+            accessToken: data.accessToken,
             refreshToken: data.refreshToken,
         });
     } catch (err) {
