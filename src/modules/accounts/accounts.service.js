@@ -1,19 +1,20 @@
 const prisma = require('../../prisma');
 
 async function createAccount(data) {
-    // Lógica para criar uma conta
-    if (!data.name || !data.type) {
-        throw new Error('Nome e tipo da conta são obrigatórios');
-    }
+  const initialBalance = data.initialBalance ?? 0;
+  // Lógica para criar uma conta
+  if (!data.name || !data.type) {
+    throw new Error("Nome e tipo da conta são obrigatórios");
+  }
 
-    return prisma.account.create({
-        data: {
-            name: data.name,
-            type: data.type,
-            initialBalance: data.initialBalance || 0,
-            balance: data.balance || 0
-        }
-    });
+  return prisma.account.create({
+    data: {
+      name: data.name,
+      type: data.type,
+      initialBalance,
+      balance: initialBalance,
+    },
+  });
 }
 
 async function listAccounts() {
