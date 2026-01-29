@@ -38,4 +38,30 @@ async function monthly(req, res, next) {
   }
 }
 
+async function summary(req, res) {
+  return res.json({
+    saldo: 3500,
+    receitas: 8000,
+    despesas: 4500,
+    resultado: 3500
+  });
+}
+
+async function monthly(req, res) {
+  return res.json([
+    { month: "Jan", receitas: 3000, despesas: 1800 },
+    { month: "Fev", receitas: 2500, despesas: 1600 },
+    { month: "Mar", receitas: 2000, despesas: 1100 }
+  ]);
+}
+
+async function byCategory(req, res) {
+  return res.json([
+    { category: "Aluguel", total: 1500 },
+    { category: "Alimentação", total: 1200 },
+    { category: "Transporte", total: 800 }
+  ]);
+}
+
+
 module.exports = { summary, byCategory, monthly };
