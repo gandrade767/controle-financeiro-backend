@@ -42,9 +42,18 @@ async function deleteAccount(id) {
     });
 }
 
+async function getAccountById(id) {
+    return prisma.account.findUnique({
+        where: {
+            id: Number(id)
+        }
+    });
+}
+
 module.exports = {
     createAccount,
     listAccounts,
     updateAccount,
+    getAccountById,
     deleteAccount
 };
