@@ -9,6 +9,9 @@ router.post('/', accountsController.createAccount);
 // Listar contas
 router.get('/', accountsController.listAccounts);
 
+// Buscar pelo id
+router.get('/:id', accountsController.getAccountById);
+
 // Atualizar conta
 router.put('/:id', accountsController.updateAccount);
 

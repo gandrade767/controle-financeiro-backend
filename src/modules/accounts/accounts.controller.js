@@ -18,6 +18,22 @@ async function listAccounts(req, res, next) {
     }
 }
 
+async function getAccountById(req, res, next) {
+    try {
+        const { id } = req.params;
+
+        const result = await accountsService.getAccountById(id);
+
+        if (!result) {
+            return res.status(404).json({ message: "Account not found" });
+        }
+
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
+}
+
 async function updateAccount(req, res, next) {
     try {
         const result = await accountsService.updateAccount(req.params.id, req.body);
@@ -40,5 +56,6 @@ module.exports = {
     createAccount,
     listAccounts,
     updateAccount,
+    getAccountById,
     deleteAccount
 };
