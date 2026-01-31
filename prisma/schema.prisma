@@ -30,6 +30,11 @@ enum UserStatus {
   INACTIVE
 }
 
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model User {
   id           Int       @id @default(autoincrement())
   name         String
@@ -51,6 +56,7 @@ model Account {
   type           AccountType
   initialBalance Decimal   @default(0) @map("initial_balance") @db.Decimal(14, 2)
   balance        Decimal   @default(0) @db.Decimal(14, 2)
+  status         AccountStatus @default(ACTIVE)
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 

@@ -35,6 +35,24 @@ async function updateAccount(id, data) {
     });
 }
 
+async function toggleAccountStatus(id) {
+  //logica pelo status
+  const account = await prisma.account.findUnique({
+    where: { id: Number(id) }
+  });
+
+  if (!account) return null;
+
+  const newStatus = account.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+
+  return prisma.account.update({
+    where: { id: Number(id) },
+    data: {
+      status: newStatus
+    }
+  });
+}
+
 async function deleteAccount(id) {
     // Lógica para deletar uma conta
     return prisma.account.delete({
@@ -55,5 +73,6 @@ module.exports = {
     listAccounts,
     updateAccount,
     getAccountById,
+    toggleAccountStatus,
     deleteAccount
 };
