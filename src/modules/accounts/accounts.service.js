@@ -13,6 +13,7 @@ async function createAccount(data) {
       type: data.type,
       initialBalance,
       balance: initialBalance,
+      status:"ACTIVE"
     },
   });
 }
