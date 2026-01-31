@@ -37,8 +37,29 @@ async function update(id, data) {
     });
 }
 
+async function toggleActive(id, userId) {
+  const category = await prisma.category.findFirst({
+    where: {
+      id: Number(id),
+      userId
+    }
+  });
+
+  if (!category) {
+    throw new Error("Categoria não encontrada");
+  }
+
+  return prisma.category.update({
+    where: { id: Number(id) },
+    data: {
+      active: !category.active
+    }
+  });
+}
+
 module.exports = {
     create,
     list,
-    update
+    update,
+    toggleActive
 };

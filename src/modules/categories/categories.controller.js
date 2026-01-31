@@ -27,8 +27,21 @@ async function update(req, res, next) {
     }
 }
 
+async function toggleActive(req, res) {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    const category = await categoriesService.toggleActive(id, userId);
+    res.json(category);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
 module.exports = {
     create,
     list,
-    update
+    update,
+    toggleActive
 };
