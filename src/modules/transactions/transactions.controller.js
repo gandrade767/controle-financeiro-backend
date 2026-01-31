@@ -15,7 +15,7 @@ async function createTransaction(req, res, next) {
 
 async function listTransactions(req, res, next) {
   try {
-    const result = await transactionsService.listTransactions();
+    const result = await transactionsService.listTransactions(req.user.id);
     res.json(result);
   } catch (err) {
     next(err);
