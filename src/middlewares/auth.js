@@ -1,23 +1,25 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = function autenticarToken(req, res, next) {
+module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ message: "Token não fornecido" });
+    return res.status(401).json({ error: "Token não informado" });
   }
 
   const [, token] = authHeader.split(" ");
 
-  if (!token) {
-    return res.status(401).json({ message: "Token mal formatado" });
-  }
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+
+    // ✅ AQUI ESTÁ O PONTO CRÍTICO
+    req.user = {
+      id: Number(decoded.id), // ou decoded.userId (veja abaixo)
+      email: decoded.email
+    };
+
     next();
   } catch (err) {
-    return res.status(401).json({ message: "Token inválido" });
+    return res.status(401).json({ error: "Token inválido" });
   }
 };

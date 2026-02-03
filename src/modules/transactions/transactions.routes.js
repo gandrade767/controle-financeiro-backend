@@ -5,10 +5,14 @@ const auth = require('../../middlewares/auth');
 const transactionsController = require('./transactions.controller');
 
 // Criar lancamento
-router.post('/', auth, transactionsController.createTransaction);
+router.post('/', auth, (req, res, next) => {
+  console.log("🔥 ROTA /api/transactions FOI CHAMADA");
+  next();
+}, transactionsController.createTransaction);
 
 //listar lancamentos
 router.get('/', auth,transactionsController.listTransactions);
 
+router.delete("/:id", auth, transactionsController.deleteTransaction);
 
 module.exports = router;

@@ -1,29 +1,23 @@
 const { CategoryKind } = require('@prisma/client');
 const prisma = require('../../prisma');
 
-async function create(data) {
-    const { name, kind } = data;
-
-    if (!name || !kind) {
-        throw new Error('Nome e tipo da categoria são obrigatórios');
+async function create({ name, kind }) {
+  return prisma.category.create({
+    data: {
+      name,
+      kind,
+      active: true
     }
-
-    if (!['INCOME', 'EXPENSE'].includes(kind)) {
-        throw new Error('Tipo da categoria inválido');
-    }
-
-    return prisma.category.create({
-        data: {
-            name,
-            kind
-        }
-    });
+  });
 }
 
-async function list() {
-    return prisma.category.findMany({
-        orderBy: { id: 'asc' }
-    });
+async function list(includeInactive = false) {
+  return prisma.category.findMany({
+    where: {
+      ...(includeInactive ? {} : { active: true })
+    },
+    orderBy: { name: "asc" }
+  });
 }
 
 async function update(id, data) {
@@ -37,12 +31,9 @@ async function update(id, data) {
     });
 }
 
-async function toggleActive(id, userId) {
+async function toggleActive(id) {
   const category = await prisma.category.findFirst({
-    where: {
-      id: Number(id),
-      userId
-    }
+    where: { id: Number(id) }
   });
 
   if (!category) {
@@ -51,9 +42,7 @@ async function toggleActive(id, userId) {
 
   return prisma.category.update({
     where: { id: Number(id) },
-    data: {
-      active: !category.active
-    }
+    data: { active: !category.active }
   });
 }
 
